@@ -27,6 +27,8 @@ CREATE TABLE pgperf.snapshot (
   ts TIMESTAMP NOT NULL
 );
 
+CREATE INDEX snapshot_ts_idx on pgperf.snapshot(ts);
+
 --
 -- Get a major version of the PostgreSQL server.
 --

@@ -17,6 +17,7 @@ pgperf.snapshot_pg_stat_database       pg_stat_databaseシステムビューの�
 pgperf.snapshot_pg_database_size       データベースのサイズを保存します
 pgperf.snapshot_pg_stat_user_tables    pg_stat_user_tablesシステムビューのスナップショットを保存します
 pgperf.snapshot_pg_statio_user_tables  pg_statio_user_tablesシステムビューのスナップショットを保存します
+pgperf.snapshot_pg_relation_size       テーブルおよびインデックスのサイズを保存します
 pgperf.snapshot_pg_stat_user_indexes   pg_stat_user_indexesシステムビューのスナップショットを保存します
 pgperf.snapshot_pg_statio_user_indexes pg_statio_user_indexesシステムビューのスナップショットを保存します
 pgperf.snapshot_pg_current_xlog        トランザクションログの挿入位置/書き込み位置を保存します
@@ -136,6 +137,26 @@ toast_blks_hit        bigint           pg_statio_user_tables.toast_blks_hit
 tidx_blks_read        bigint           pg_statio_user_tables.tidx_blks_read
 tidx_blks_hit         bigint           pg_statio_user_tables.tidx_blks_hit
 ===================== ================ ====================================== ===========
+
+
+pgperf.snapshot_pg_relation_sizeテーブル
+----------------------------------------
+
+テーブルおよびインデックスのサイズを取得する ``pg_relation_size()``, ``pg_total_relation_size()`` 関数のスナップショットを保存するテーブルです。
+
+====================== ================ ====================================== =============================
+カラム名               データ型         取得元                                 備考
+====================== ================ ====================================== =============================
+sid                    integer          スナップショットID
+schemaname             name             pg_stat_user_tables.schemaname,
+                                        pg_stat_user_indexes.schemaname
+relid                  oid              pg_stat_user_tables.relid,
+                                        pg_stat_user_indexes.indexrelid
+relname                name             pg_class.relname
+pg_relation_size       bigint           pg_relaion_size()
+pg_total_relation_size bigint           pg_total_relaion_size()                対象がテーブルの場合のみ有効
+====================== ================ ====================================== =============================
+
 
 pgperf.snapshot_pg_stat_user_indexesテーブル
 --------------------------------------------

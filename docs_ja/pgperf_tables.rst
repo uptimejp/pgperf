@@ -14,6 +14,7 @@
 ====================================== ================================================================== ========
 pgperf.snapshot                        取得したスナップショットのIDと取得時間を保存します
 pgperf.snapshot_pg_stat_database       pg_stat_databaseシステムビューのスナップショットを保存します
+pgperf.snapshot_pg_database_size       データベースのサイズを保存します
 pgperf.snapshot_pg_stat_user_tables    pg_stat_user_tablesシステムビューのスナップショットを保存します
 pgperf.snapshot_pg_statio_user_tables  pg_statio_user_tablesシステムビューのスナップショットを保存します
 pgperf.snapshot_pg_stat_user_indexes   pg_stat_user_indexesシステムビューのスナップショットを保存します
@@ -66,6 +67,21 @@ tup_deleted           bigint           pg_stat_database.tup_deleted
 conflicts             bigint           pg_stat_database.conflicts             9.1以降のみ
 stats_reset           timestampz       pg_stat_database.stats_reset           9.1以降のみ
 ===================== ================ ====================================== ===========
+
+
+pgperf.snapshot_pg_database_sizeテーブル
+----------------------------------------
+
+データベースのサイズを取得する ``pg_database_size()`` 関数のスナップショットを保存するテーブルです。
+
+===================== ================ ====================================== ===========
+カラム名              データ型         取得元                                 備考
+===================== ================ ====================================== ===========
+sid                   integer          スナップショットID
+datname               name             pg_database.datname
+pg_database_size      bigint           pg_database_size()
+===================== ================ ====================================== ===========
+
 
 pgperf.snapshot_pg_stat_user_tablesテーブル
 -------------------------------------------

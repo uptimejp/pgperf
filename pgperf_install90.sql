@@ -113,6 +113,7 @@ BEGIN
 
   INSERT INTO pgperf.snapshot (sid,ts) VALUES (_sid, now());
 
+  PERFORM pgperf.create_snapshot_pg_database_size(_sid);
   PERFORM pgperf.create_snapshot_pg_relation_size(_sid);
   PERFORM pgperf.create_snapshot_pg_stat_bgwriter(_sid);
   PERFORM pgperf.create_snapshot_pg_stat_database(_sid);
@@ -171,6 +172,7 @@ BEGIN
   PERFORM pgperf.delete_snapshot_pg_stat_database(_sid);
   PERFORM pgperf.delete_snapshot_pg_stat_bgwriter(_sid);
   PERFORM pgperf.delete_snapshot_pg_relation_size(_sid);
+  PERFORM pgperf.delete_snapshot_pg_database_size(_sid);
 
   DELETE FROM pgperf.snapshot WHERE sid = _sid;
 
@@ -292,6 +294,58 @@ DECLARE
   _sid ALIAS FOR $1;
 BEGIN
   DELETE FROM pgperf.snapshot_pg_stat_bgwriter WHERE sid = _sid;
+
+  RETURN true;
+END
+' LANGUAGE 'plpgsql';
+CREATE TABLE pgperf.snapshot_pg_database_size (
+  sid INTEGER NOT NULL,
+
+  datname name,
+  pg_database_size bigint
+);
+
+CREATE INDEX snapshot_pg_database_size_sid_idx
+  ON pgperf.snapshot_pg_database_size(sid);
+
+--
+-- Create a snapshot for pg_database_size.
+--
+CREATE OR REPLACE FUNCTION pgperf.create_snapshot_pg_database_size (
+  INTEGER
+) RETURNS boolean
+AS '
+DECLARE
+  _sid ALIAS FOR $1;
+
+  _r RECORD;
+BEGIN
+  FOR _r IN SELECT datname, pg_database_size(datname)
+              FROM pg_database LOOP
+
+    INSERT INTO pgperf.snapshot_pg_database_size (sid,
+                                                  datname,
+                                                  pg_database_size)
+                                          VALUES (_sid,
+                                                  _r.datname,
+                                                  _r.pg_database_size);
+  END LOOP;
+
+  RETURN true;
+END
+' LANGUAGE 'plpgsql';
+
+--
+-- Delete a snapshot of pg_database_size.
+--
+CREATE OR REPLACE FUNCTION pgperf.delete_snapshot_pg_database_size (
+  INTEGER
+) RETURNS boolean
+AS '
+DECLARE
+  _sid ALIAS FOR $1;
+BEGIN
+  DELETE FROM pgperf.snapshot_pg_database_size WHERE sid = _sid;
 
   RETURN true;
 END

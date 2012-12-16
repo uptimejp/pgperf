@@ -48,11 +48,13 @@ level    integer  取得するスナップショットレベル
 ========== =====================================================================
 1          基本的なアクセス統計情報およびセッション情報のスナップショットを取得します。
 
-           pg_stat_database
+           pg_stat_database, pg_database_size()
 
            pg_stat_user_tables, pg_statio_user_tables
 
            pg_stat_user_indexes, pg_statio_user_indexes
+
+           pg_relation_size(), pg_total_relation_size()
 
            pg_current_xlog_location(), pg_current_xlog_insert_location()
 

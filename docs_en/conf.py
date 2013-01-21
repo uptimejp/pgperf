@@ -40,7 +40,8 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'PgPerfパッケージユーザーマニュアル'
+#project = u'PgPerfパッケージユーザーマニュアル'
+project = u'PgPerf Package User\'s Manual'
 copyright = u'2012, Uptime Technologies, LLC.'
 
 # The version info for the project you're documenting, acts as replacement for

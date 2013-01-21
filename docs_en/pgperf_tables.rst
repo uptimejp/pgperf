@@ -1,58 +1,57 @@
-スナップショットテーブル
-========================
+Snapshot Tables
+===============
 
-この章ではパフォーマンス統計情報のスナップショットを保存するテーブルについて解説します。
+This chapter is intended to give detailed information about several snapshot tables, where the performance snapshot to be stored.
 
-スナップショットテーブル一覧
-----------------------------
+Snapshot Table List
+-------------------
 
-パフォーマンス統計情報のスナップショットは、PostgreSQL内部の各種統計情報と対応する以下のテーブルに保存されます。
+Performance snapshot is going to be stored in the following tables associated with each performance statistics available in PostgreSQL.
 
-====================================== ================================================================== ========
+====================================== ================================================================================ ========
+Table Name                             Description                                                                      Note
+====================================== ================================================================================ ========
+pgperf.snapshot                        Stores snapshot id and timestamp of the performance snapshot.
+pgperf.snapshot_pg_stat_database       Stores a snapshot of the pg_stat_database system view.
+pgperf.snapshot_pg_database_size       Stores a snapshot of the database size.
+pgperf.snapshot_pg_stat_user_tables    Stores a snapshot of the pg_stat_user_tables system view.
+pgperf.snapshot_pg_statio_user_tables  Stores a snapshot of the pg_statio_user_tables system view.
+pgperf.snapshot_pg_stat_user_indexes   Stores a snapshot of the pg_stat_user_indexes system view.
+pgperf.snapshot_pg_statio_user_indexes Stores a snapshot of the pg_statio_user_indexes system view.
+pgperf.snapshot_pg_relation_size       Stores a snaphsot of the table and index size.
+pgperf.snapshot_pg_current_xlog        Stores a snapshot of the current xlog location and the current insert location.
+pgperf.snapshot_pg_stat_bgwriter       Stores a snapshot of the pg_stat_bgwriter system view.
+pgperf.snapshot_pg_stat_activity       Stores a snapshot of the pg_stat_activity system view.
+pgperf.snapshot_pg_locks               Stores a snapshot of the pg_locks system view.
+pgperf.snapshot_pg_statistic           Stores a snapshot of the pg_statistics system table.
+pgperf.snapshot_pg_stat_statements     Stores a snapshot of the pg_stat_statements view.                                8.4 or later
+pgperf.snapshot_pgstattuple            Stores a snapshot of the result of pgstattuple function.
+pgperf.snapshot_pgstatindex            Stores a snapshot of the result of pgstatindex function.
+====================================== ================================================================================ ========
 
-テーブル名                             概要                                                               備考
-====================================== ================================================================== ========
-pgperf.snapshot                        取得したスナップショットのIDと取得時間を保存します
-pgperf.snapshot_pg_stat_database       pg_stat_databaseシステムビューのスナップショットを保存します
-pgperf.snapshot_pg_database_size       データベースのサイズを保存します
-pgperf.snapshot_pg_stat_user_tables    pg_stat_user_tablesシステムビューのスナップショットを保存します
-pgperf.snapshot_pg_statio_user_tables  pg_statio_user_tablesシステムビューのスナップショットを保存します
-pgperf.snapshot_pg_stat_user_indexes   pg_stat_user_indexesシステムビューのスナップショットを保存します
-pgperf.snapshot_pg_statio_user_indexes pg_statio_user_indexesシステムビューのスナップショットを保存します
-pgperf.snapshot_pg_relation_size       テーブルおよびインデックスのサイズを保存します
-pgperf.snapshot_pg_current_xlog        トランザクションログの挿入位置/書き込み位置を保存します
-pgperf.snapshot_pg_stat_bgwriter       pg_stat_bgwriterシステムビューのスナップショットを保存します
-pgperf.snapshot_pg_stat_activity       pg_stat_activityシステムビューのスナップショットを保存します
-pgperf.snapshot_pg_locks               pg_locksシステムビューのスナップショットを保存します
-pgperf.snapshot_pg_statistic           pg_statisticsシステムテーブルのスナップショットを保存します
-pgperf.snapshot_pg_stat_statements     pg_stat_statementsビューのスナップショットを保存します             8.4以降のみ
-pgperf.snapshot_pgstattuple            pgstattuple関数の実行結果のスナップショットを保存します
-pgperf.snapshot_pgstatindex            pgstatindex関数の実行結果をスナップショットを保存します
-====================================== ================================================================== ========
+pgperf.snapshot Table
+---------------------
 
-pgperf.snapshotテーブル
------------------------
+This table stores snapshot id and timestamp of each snapshot taken by the snapshot function.
 
-スナップショット関数で取得したスナップショットのスナップショットIDおよび取得時間を保持するテーブルです。
-
-===================== ================ ======================== ============
-カラム名              データ型         取得元                   備考
-===================== ================ ======================== ============
-sid                   integer          スナップショットID       単調増加
-ts                    timestamp        スナップショット取得時刻
-===================== ================ ======================== ============
-
+===================== ================ ========================= ============
+Column Name           Type             Source                    Note
+===================== ================ ========================= ============
+sid                   integer          Snapshot ID               Monotone increasing
+ts                    timestamp        Timestamp of the snapshot
+===================== ================ ========================= ============
 
 
-pgperf.snapshot_pg_stat_databaseテーブル
-----------------------------------------
 
-アクセス統計情報を取得する ``pg_stat_database`` システムビューのスナップショットを保存するテーブルです。
+pgperf.snapshot_pg_stat_database Table
+--------------------------------------
+
+This table stores snapshots of the ``pg_stat_database`` system view which contains the database access statistics.
 
 ===================== ================ ====================================== ===========
-カラム名              データ型         取得元                                 備考
+Column Name           Type             Source                                 Note
 ===================== ================ ====================================== ===========
-sid                   integer          スナップショットID
+sid                   integer          Snapshot ID
 datid                 oid              pg_stat_database.datid
 datname               name             pg_stat_database.datname
 numbackends           integer          pg_stat_database.numbackends
@@ -65,34 +64,34 @@ tup_fetched           bigint           pg_stat_database.tup_fetched
 tup_inserted          bigint           pg_stat_database.tup_inserted
 tup_updated           bigint           pg_stat_database.tup_updated
 tup_deleted           bigint           pg_stat_database.tup_deleted
-conflicts             bigint           pg_stat_database.conflicts             9.1以降のみ
-stats_reset           timestampz       pg_stat_database.stats_reset           9.1以降のみ
+conflicts             bigint           pg_stat_database.conflicts             9.1 or later
+stats_reset           timestampz       pg_stat_database.stats_reset           9.1 or later
 ===================== ================ ====================================== ===========
 
 
-pgperf.snapshot_pg_database_sizeテーブル
-----------------------------------------
+pgperf.snapshot_pg_database_size Table
+--------------------------------------
 
-データベースのサイズを取得する ``pg_database_size()`` 関数のスナップショットを保存するテーブルです。
+This table stores snapshots of result of the ``pg_database_size()`` function which gets database size.
 
 ===================== ================ ====================================== ===========
-カラム名              データ型         取得元                                 備考
+Column Name           Type             Source                                 Note
 ===================== ================ ====================================== ===========
-sid                   integer          スナップショットID
+sid                   integer          Snapshot ID
 datname               name             pg_database.datname
 pg_database_size      bigint           pg_database_size()
 ===================== ================ ====================================== ===========
 
 
-pgperf.snapshot_pg_stat_user_tablesテーブル
--------------------------------------------
+pgperf.snapshot_pg_stat_user_tables Table
+-----------------------------------------
 
-アクセス統計情報を取得する ``pg_stat_user_tables`` システムビューのスナップショットを保存するテーブルです。
+This table stores snapshots of the ``pg_stat_user_tables`` system view which contains the table access statistics.
 
 ===================== ================ ====================================== ===========
-カラム名              データ型         取得元                                 備考
+Column Name           Type             Source                                 Note
 ===================== ================ ====================================== ===========
-sid                   integer          スナップショットID
+sid                   integer          Snapshot ID
 relid                 oid              pg_stat_user_tables.relid
 schemaname            name             pg_stat_user_tables.schemaname
 relname               name             pg_stat_user_tables.relname
@@ -110,21 +109,21 @@ last_vacuum           timestampz       pg_stat_user_tables.last_vacuum
 last_autovacuum       timestampz       pg_stat_user_tables.last_autovacuum
 last_analyze          timestampz       pg_stat_user_tables.last_analyze
 last_autoanalyze      timestampz       pg_stat_user_tables.last_autoanalyze
-vacuum_count          bigint           pg_stat_user_tables.vacuum_count       9.1以降のみ
-autovacuum_count      bigint           pg_stat_user_tables.autovacuum_count   9.1以降のみ
-analyze_count         bigint           pg_stat_user_tables.analyze_count      9.1以降のみ
-autoanalyze_count     bigint           pg_stat_user_tables.autoanalyze_count  9.1以降のみ
+vacuum_count          bigint           pg_stat_user_tables.vacuum_count       9.1 or later
+autovacuum_count      bigint           pg_stat_user_tables.autovacuum_count   9.1 or later
+analyze_count         bigint           pg_stat_user_tables.analyze_count      9.1 or later
+autoanalyze_count     bigint           pg_stat_user_tables.autoanalyze_count  9.1 or later
 ===================== ================ ====================================== ===========
 
-pgperf.snapshot_pg_statio_user_tablesテーブル
----------------------------------------------
+pgperf.snapshot_pg_statio_user_tables Table
+-------------------------------------------
 
-アクセス統計情報を取得する ``pg_statio_user_tables`` システムビューのスナップショットを保存するテーブルです。
+This table stores snapshots of the ``pg_statio_user_tables`` system view which contains the table access statistics.
 
 ===================== ================ ====================================== ===========
-カラム名              データ型         取得元                                 備考
+Column Name           Type             Source                                 Note
 ===================== ================ ====================================== ===========
-sid                   integer          スナップショットID
+sid                   integer          Snapshot ID
 relid                 oid              pg_statio_user_tables.relid
 schemaname            name             pg_statio_user_tables.schemaname
 relname               name             pg_statio_user_tables.relname
@@ -139,15 +138,15 @@ tidx_blks_hit         bigint           pg_statio_user_tables.tidx_blks_hit
 ===================== ================ ====================================== ===========
 
 
-pgperf.snapshot_pg_stat_user_indexesテーブル
---------------------------------------------
+pgperf.snapshot_pg_stat_user_indexes Table
+------------------------------------------
 
-アクセス統計情報を取得する ``pg_stat_user_indexes`` システムビューのスナップショットを保存するテーブルです。
+This table stores snapshots of the ``pg_stat_user_indexes`` system view which contains the index access statistics.
 
 ===================== ================ ====================================== ===========
-カラム名              データ型         取得元                                 備考
+Column Name           Type             Source                                 Note
 ===================== ================ ====================================== ===========
-sid                   integer          スナップショットID
+sid                   integer          Snapshot ID
 relid                 oid              pg_stat_user_indexes.relid
 indexrelid            oid              pg_stat_user_indexes.indexrelid
 schemaname            name             pg_stat_user_indexes.schemaname
@@ -159,15 +158,15 @@ idx_tup_fetch         bigint           pg_stat_user_indexes.idx_tup_fetch
 ===================== ================ ====================================== ===========
 
 
-pgperf.snapshot_pg_statio_user_indexesテーブル
-----------------------------------------------
+pgperf.snapshot_pg_statio_user_indexes Table
+--------------------------------------------
 
-アクセス統計情報を取得する ``pg_statio_user_indexes`` システムビューのスナップショットを保存するテーブルです。
+This table stores snapshots of the ``pg_statio_user_indexes`` system view which contains the index access statistics.
 
 ===================== ================ ====================================== ===========
-カラム名              データ型         取得元                                 備考
+Column Name           Type             Source                                 Note
 ===================== ================ ====================================== ===========
-sid                   integer          スナップショットID
+sid                   integer          Snapshot ID
 relid                 oid              pg_statio_user_indexes.relid
 indexrelid            oid              pg_statio_user_indexes.indexrelid
 schemaname            name             pg_statio_user_indexes.schemaname
@@ -178,99 +177,99 @@ idx_blks_hit          bigint           pg_statio_user_indexes.idx_blks_hit
 ===================== ================ ====================================== ===========
 
 
-pgperf.snapshot_pg_relation_sizeテーブル
-----------------------------------------
+pgperf.snapshot_pg_relation_size Table
+--------------------------------------
 
-テーブルおよびインデックスのサイズを取得する ``pg_relation_size()``, ``pg_total_relation_size()`` 関数のスナップショットを保存するテーブルです。
+This table stores snapshots of the result of ``pg_relation_size()`` and ``pg_total_relation_size()`` function which gets table and/or index size.
 
 ====================== ================ ====================================== =============================
-カラム名               データ型         取得元                                 備考
+Column Name            Type             Source                                 Note
 ====================== ================ ====================================== =============================
-sid                    integer          スナップショットID
+sid                    integer          Snapshot ID
 schemaname             name             pg_stat_user_tables.schemaname,
                                         pg_stat_user_indexes.schemaname
 relid                  oid              pg_stat_user_tables.relid,
                                         pg_stat_user_indexes.indexrelid
 relname                name             pg_class.relname
 pg_relation_size       bigint           pg_relaion_size()
-pg_total_relation_size bigint           pg_total_relaion_size()                対象がテーブルの場合のみ有効
+pg_total_relation_size bigint           pg_total_relaion_size()                Available only for tables
 ====================== ================ ====================================== =============================
 
 
-pgperf.snapshot_pg_current_xlogテーブル
----------------------------------------
+pgperf.snapshot_pg_current_xlog Table
+-------------------------------------
 
-トランザクションログの位置を取得する ``pg_current_xlog_location()``, ``pg_current_xlog_insert_location()`` 関数のスナップショットを保存するテーブルです。
+This table stores snapshots of the result of ``pg_current_xlog_location()`` and ``pg_current_xlog_insert_location()`` function which gets current WAL locations.
 
 ===================== ================ ====================================== ===========
-カラム名              データ型         取得元                                 備考
+Column Name           Type             Source                                 Note
 ===================== ================ ====================================== ===========
-sid                   integer          スナップショットID
+sid                   integer          Snaphsot ID
 location              text             pg_current_xlog_location()
 insert_location       text             pg_current_xlog_insert_location()
 ===================== ================ ====================================== ===========
 
-pgperf.snapshot_pg_stat_bgwriterテーブル
-----------------------------------------
+pgperf.snapshot_pg_stat_bgwriter Table
+--------------------------------------
 
-バックグラウンドライタ統計情報を取得する ``pg_stat_bgwriter`` システムビューのスナップショットを保存するテーブルです。
+This table stores snapshots of the ``pg_stat_bgwriter`` system view which contains the background writer statistics.
 
 ===================== ================ ====================================== ===========
-カラム名              データ型         取得元                                 備考
+Column Name           Type             Source                                 Note
 ===================== ================ ====================================== ===========
-sid                   integer          スナップショットID
+sid                   integer          Snapshot ID
 checkpoints_timed     bigint           pg_stat_bgwriter.checkpoints_timed
 checkpoints_req       bigint           pg_stat_bgwriter.checkpoints_req
-checkpoint_write_time double precision pg_stat_bgwriter.checkpoint_write_time 9.2以降のみ
-checkpoint_sync_time  double precision pg_stat_bgwriter.checkpoint_sync_time  9.2以降のみ
+checkpoint_write_time double precision pg_stat_bgwriter.checkpoint_write_time 9.2 or later
+checkpoint_sync_time  double precision pg_stat_bgwriter.checkpoint_sync_time  9.2 or later
 buffers_checkpoint    bigint           pg_stat_bgwriter.buffers_checkpoint
 buffers_clean         bigint           pg_stat_bgwriter.buffers_clean
 maxwritten_clean      bigint           pg_stat_bgwriter.maxwritten_clean
 buffers_backend       bigint           pg_stat_bgwriter.buffers_backend
-buffers_backend_fsync bigint           pg_stat_bgwriter.buffers_backend_fsync 9.1以降のみ
+buffers_backend_fsync bigint           pg_stat_bgwriter.buffers_backend_fsync 9.1 or later
 buffers_alloc         bigint           pg_stat_bgwriter.buffers_alloc
-stats_reset           timestampz       pg_stat_bgwriter.stats_reset           9.1以降のみ
+stats_reset           timestampz       pg_stat_bgwriter.stats_reset           9.1 or later
 ===================== ================ ====================================== ===========
 
 
-pgperf.snapshot_pg_stat_activityテーブル
-----------------------------------------
+pgperf.snapshot_pg_stat_activity Table
+--------------------------------------
 
-セッション情報を取得する ``pg_stat_activity`` システムビューのスナップショットを保存するテーブルです。
+This table stores snapshots of the ``pg_stat_activity`` system view which contains the session information.
 
 ===================== ================ ====================================== ===========
-カラム名              データ型         取得元                                 備考
+Column Name           Type             Source                                 Note
 ===================== ================ ====================================== ===========
-sid                   integer          スナップショットID
+sid                   integer          Snapshot ID
 datid                 oid              pg_stat_activity.datid
 datname               name             pg_stat_activity.datname
-procpid               int4             pg_stat_activity.procpid               9.1以前
-pid                   int4             pg_stat_activity.pid                   9.2以降
+procpid               int4             pg_stat_activity.procpid               9.1 or before
+pid                   int4             pg_stat_activity.pid                   9.2 or later
 usesysid              oid              pg_stat_activity.usesysid
 usename               name             pg_stat_activity.usename
-application_name      text             pg_stat_activity.application_name      9.0以降
+application_name      text             pg_stat_activity.application_name      9.0 or later
 client_addr           inet             pg_stat_activity.client_addr
-client_hostname       text             pg_stat_activity.client_hostname       9.1以降
+client_hostname       text             pg_stat_activity.client_hostname       9.1 or later
 client_port           int4             pg_stat_activity.client_port
 backend_start         timestamptz      pg_stat_activity.backend_start
 xact_start            timestamptz      pg_stat_activity.xact_start
 query_start           timestamptz      pg_stat_activity.query_start
-state_change          timestamptz      pg_stat_activity.state_change          9.2以降
+state_change          timestamptz      pg_stat_activity.state_change          9.2 or later
 waiting               bool             pg_stat_activity.waiting
-state                 text             pg_stat_activity.state                 9.2以降
-current_query         text             pg_stat_activity.current_query         9.1以前
-query                 text             pg_stat_activity.query                 9.2以降
+state                 text             pg_stat_activity.state                 9.2 or later
+current_query         text             pg_stat_activity.current_query         9.1 or before
+query                 text             pg_stat_activity.query                 9.2 or later
 ===================== ================ ====================================== ===========
 
-pgperf.snapshot_pg_locksテーブル
---------------------------------
+pgperf.snapshot_pg_locks Table
+------------------------------
 
-ロック情報を取得する ``pg_locks`` システムビューのスナップショットを保存するテーブルです。
+This table stores snapshots of the ``pg_locks`` system view which contains the lock information.
 
 ===================== ================ ====================================== ===========
-カラム名              データ型         取得元                                 備考
+Column Name           Type             Source                                 Note
 ===================== ================ ====================================== ===========
-sid                   integer          スナップショットID
+sid                   integer          Snapshot ID
 locktype              text             pg_locks.locktype
 database              oid              pg_locks.database
 relation              oid              pg_locks.relation
@@ -285,23 +284,23 @@ virtualtransaction    text             pg_locks.virtualtransaction
 pid                   int4             pg_locks.pid
 mode                  text             pg_locks.mode
 granted               bool             pg_locks.granted
-fastpath              bool             pg_locks.fastpath                      9.2以降
+fastpath              bool             pg_locks.fastpath                      9.2 or later
 ===================== ================ ====================================== ===========
 
-pgperf.snapshot_pg_statisticテーブル
-------------------------------------
+pgperf.snapshot_pg_statistic Table
+----------------------------------
 
-オプティマイザ統計情報を保持する ``pg_statistic`` システムテーブルのスナップショットを保存するテーブルです。
+This table stores snapshots of the ``pg_statistic`` system table which contains the optimizer statistics.
 
 ===================== ================ ====================================== ===========
-カラム名              データ型         取得元                                 備考
+Column Name           Type             Source                                 Note
 ===================== ================ ====================================== ===========
-sid                   integer          スナップショットID
+sid                   integer          Snapshot ID
 starelid              oid              pg_statistic.starelid
 starelname            name             pg_class.relname
 staattnum             smallint         pg_statistic.staattnum
 staattname            name             pg_attribute.attname
-stainherit            boolean          pg_statistic.stainherit                9.0以降
+stainherit            boolean          pg_statistic.stainherit                9.0 or later
 stanullfrac           real             pg_statistic.stanullfrac
 stawidth              integer          pg_statistic.stawidth
 stadistinct           real             pg_statistic.stadistinct
@@ -309,33 +308,33 @@ stakind1              smallint         pg_statistic.stakind1
 stakind2              smallint         pg_statistic.stakind2
 stakind3              smallint         pg_statistic.stakind3
 stakind4              smallint         pg_statistic.stakind4
-stakind5              smallint         pg_statistic.stakind5                  9.2以降
+stakind5              smallint         pg_statistic.stakind5                  9.2 or later
 staop1                oid              pg_statistic.staop1
 staop2                oid              pg_statistic.staop2
 staop3                oid              pg_statistic.staop3
 staop4                oid              pg_statistic.staop4
-staop5                oid              pg_statistic.staop5                    9.2以降
+staop5                oid              pg_statistic.staop5                    9.2 or later
 stanumbers1           real[]           pg_statistic.stanumbers1
 stanumbers2           real[]           pg_statistic.stanumbers2
 stanumbers3           real[]           pg_statistic.stanumbers3
 stanumbers4           real[]           pg_statistic.stanumbers4
-stanumbers5           real[]           pg_statistic.stanumbers5               9.2以降
+stanumbers5           real[]           pg_statistic.stanumbers5               9.2 or later
 stavalues1            text             pg_statistic.stavalues1
 stavalues2            text             pg_statistic.stavalues2
 stavalues3            text             pg_statistic.stavalues3
 stavalues4            text             pg_statistic.stavalues4
-stavalues5            text             pg_statistic.stavalues5                9.2以降
+stavalues5            text             pg_statistic.stavalues5                9.2 or later
 ===================== ================ ====================================== ===========
 
-pgperf.snapshot_pg_stat_statementsテーブル
-------------------------------------------
+pgperf.snapshot_pg_stat_statements Table
+----------------------------------------
 
-セッション統計情報を取得する ``pg_stat_statements`` システムビューのスナップショットを保存するテーブルです。アドオンモジュール ``pg_stat_statements`` をインストール、設定している場合のみ有効です。
+This table stores snapshots of the ``pg_stat_statements`` view which contains the session statistics. This table is available only when the ``pg_stat_statements`` module has been installed and enabled.
 
 ===================== ================ ====================================== ===========
-カラム名              データ型         取得元                                 備考
+Column Name           Type             Source                                 Note
 ===================== ================ ====================================== ===========
-sid                   integer          スナップショットID
+sid                   integer          Snapshot ID
 userid                oid              pg_stat_statements.userid
 dbid                  oid              pg_stat_statements.dbid
 query                 text             pg_stat_statements.query
@@ -344,27 +343,27 @@ total_time            double precision pg_stat_statements.total_time
 rows                  bigint           pg_stat_statements.rows
 shared_blks_hit       bigint           pg_stat_statements.shared_blks_hit
 shared_blks_read      bigint           pg_stat_statements.shared_blks_read
-shared_blks_dirtied   bigint           pg_stat_statements.shared_blks_dirtied 9.2以降
+shared_blks_dirtied   bigint           pg_stat_statements.shared_blks_dirtied 9.2 or later
 shared_blks_written   bigint           pg_stat_statements.shared_blks_written
 local_blks_hit        bigint           pg_stat_statements.local_blks_hit
 local_blks_read       bigint           pg_stat_statements.local_blks_read
-local_blks_dirtied    bigint           pg_stat_statements.local_blks_dirtied  9.2以降
+local_blks_dirtied    bigint           pg_stat_statements.local_blks_dirtied  9.2 or later
 local_blks_written    bigint           pg_stat_statements.local_blks_written
 temp_blks_read        bigint           pg_stat_statements.temp_blks_read
 temp_blks_written     bigint           pg_stat_statements.temp_blks_written
-blk_read_time         double precision pg_stat_statements.blk_read_time       9.2以降
-blk_write_time        double precision pg_stat_statements.blk_write_time      9.2以降
+blk_read_time         double precision pg_stat_statements.blk_read_time       9.2 or later
+blk_write_time        double precision pg_stat_statements.blk_write_time      9.2 or later
 ===================== ================ ====================================== ===========
 
-pgperf.snapshot_pgstattupleテーブル
------------------------------------
+pgperf.snapshot_pgstattuple Table
+---------------------------------
 
-テーブルのフラグメンテーション情報を取得する ``pgstattuple()`` 関数のスナップショットを保存するテーブルです。アドオンモジュール ``pgstattuple`` をインストール、設定している場合のみ有効です。
+This table stores snapshots of the result of the ``pgstattuple()`` function which gets the table fragmentation statistics. This table is available only when the ``pgstattuple`` module has been installed.
 
 ===================== ================ ====================================== ===========
-カラム名              データ型         取得元                                 備考
+Column Name           Type             Source                                 Note
 ===================== ================ ====================================== ===========
-sid                   integer          スナップショットID
+sid                   integer          Snapshot ID
 relname               name             pg_class.relname
 table_len             int8             pgstattuple().table_len
 tuple_count           int8             pgstattuple().tuple_count
@@ -377,15 +376,15 @@ free_space            int8             pgstattuple().free_space
 free_percent          float8           pgstattuple().free_percent
 ===================== ================ ====================================== ===========
 
-pgperf.snapshot_pgstatindexテーブル
------------------------------------
+pgperf.snapshot_pgstatindex Table
+---------------------------------
 
-インデックスのフラグメンテーション情報を取得する ``pgstatindex()`` 関数のスナップショットを保存するテーブルです。アドオンモジュール ``pgstattuple`` をインストール、設定している場合のみ有効です。
+This table stores snapshots of the result of the ``pgstatindex()`` function which gets the index fragmentation statistics. This table is available only when the ``pgstattuple`` module has been installed.
 
 ===================== ================ ====================================== ===========
-カラム名              データ型         取得元                                 備考
+Column Name           Type             Source                                 Note
 ===================== ================ ====================================== ===========
-sid                   integer          スナップショットID
+sid                   integer          Snapshot ID
 relname               name             pg_class.relname
 version               int4             pgstatindex().version
 tree_level            int4             pgstatindex().tree_level
